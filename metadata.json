@@ -1,0 +1,8 @@
+{
+  "name": "KaamKhoj - Nepali Freelance Hub",
+  "description": "A premium, production-ready freelancing platform designed for Nepal, connecting local talent with businesses. Features escrow payments, multi-role dashboards, and AI-powered gig management.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
