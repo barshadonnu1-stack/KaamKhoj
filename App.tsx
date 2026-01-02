@@ -143,6 +143,9 @@ const Navigation: React.FC<{ user: User | null; onLogout: () => void }> = ({ use
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const location = useLocation();
+  
+  // Is this the home page (landing page)?
+  const isHome = location.pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
@@ -156,12 +159,22 @@ const Navigation: React.FC<{ user: User | null; onLogout: () => void }> = ({ use
     setShowUserMenu(false);
   }, [location]);
 
+  // If we are on Home, we want transparent until scrolled.
+  // If we are elsewhere, we always want solid background.
+  const isTransparent = isHome && !isScrolled && !isMenuOpen;
+
+  // Text color logic
+  const textColorClass = isTransparent ? 'text-white' : 'text-gray-900 dark:text-white';
+  const navItemClass = isTransparent ? 'text-white/80 hover:text-white' : 'text-gray-600 dark:text-gray-300 hover:text-blue-500';
+  const logoSuffixClass = isTransparent ? 'text-white/90' : 'text-gray-900 dark:text-white';
+  const logoMainClass = isTransparent ? 'text-white' : 'text-blue-600';
+
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled || isMenuOpen ? 'bg-white/95 dark:bg-gray-950/95 backdrop-blur-md border-b dark:border-gray-800 py-3' : 'bg-transparent py-5'}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isTransparent ? 'bg-transparent py-5' : 'bg-white/95 dark:bg-gray-950/95 backdrop-blur-md border-b dark:border-gray-800 py-3'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2 group">
-          <span className={`text-2xl font-black tracking-tighter ${isScrolled || isMenuOpen ? 'text-blue-600' : 'text-white'}`}>
-            Kaam<span className={isScrolled || isMenuOpen ? 'text-gray-900 dark:text-white' : 'text-white/90'}>Khoj</span>
+          <span className={`text-2xl font-black tracking-tighter ${logoMainClass}`}>
+            Kaam<span className={logoSuffixClass}>Khoj</span>
           </span>
           <span className="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-blue-600 text-white uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">Beta v4.0</span>
         </Link>
@@ -175,7 +188,7 @@ const Navigation: React.FC<{ user: User | null; onLogout: () => void }> = ({ use
             { label: 'Job Board', path: '/jobs' },
             { label: 'Community', path: '/community' }
           ].map(item => (
-            <Link key={item.label} to={item.path} className={`text-xs font-bold uppercase tracking-widest hover:text-blue-500 transition-colors ${isScrolled ? 'text-gray-600 dark:text-gray-300' : 'text-white/80'}`}>
+            <Link key={item.label} to={item.path} className={`text-xs font-bold uppercase tracking-widest transition-colors ${navItemClass}`}>
               {item.label}
             </Link>
           ))}
@@ -188,7 +201,7 @@ const Navigation: React.FC<{ user: User | null; onLogout: () => void }> = ({ use
             <div className="flex items-center gap-4 pl-4 border-l border-gray-200 dark:border-gray-800 relative">
                {/* Notification Bell */}
                <div className="relative">
-                 <button onClick={() => setShowNotifications(!showNotifications)} className={`relative cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-full transition ${isScrolled ? 'text-gray-600 dark:text-gray-300' : 'text-white'}`}>
+                 <button onClick={() => setShowNotifications(!showNotifications)} className={`relative cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-full transition ${textColorClass}`}>
                    <BellRing className="w-5 h-5" />
                    <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-gray-900"></span>
                  </button>
@@ -236,7 +249,7 @@ const Navigation: React.FC<{ user: User | null; onLogout: () => void }> = ({ use
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <Link to="/auth?mode=login" className={`text-xs font-bold uppercase tracking-wider hover:text-blue-500 transition ${isScrolled ? 'text-gray-900 dark:text-white' : 'text-white'}`}>Log In</Link>
+              <Link to="/auth?mode=login" className={`text-xs font-bold uppercase tracking-wider hover:text-blue-500 transition ${textColorClass}`}>Log In</Link>
               <Link to="/auth?mode=signup" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-blue-600/20">
                 Join Now
               </Link>
@@ -247,7 +260,7 @@ const Navigation: React.FC<{ user: User | null; onLogout: () => void }> = ({ use
         {/* Mobile Toggle */}
         <div className="flex lg:hidden items-center gap-3">
           <ThemeToggle />
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`p-2 rounded-lg ${isScrolled || isMenuOpen ? 'text-gray-900 dark:text-white' : 'text-white'}`}>
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`p-2 rounded-lg ${textColorClass}`}>
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
@@ -314,7 +327,7 @@ const HomeView = ({ user }: { user: User | null }) => {
   return (
     <div className="animate-in fade-in">
       {/* Hero Section */}
-      <section className="relative min-h-[600px] flex items-center justify-center px-4 overflow-hidden bg-[#0f172a] text-white">
+      <section className="relative min-h-[700px] flex items-center justify-center px-4 overflow-hidden bg-[#0f172a] text-white -mt-20 pt-20">
          <div className="absolute inset-0">
             <div className="absolute inset-0 bg-gradient-to-b from-blue-900/40 to-[#0f172a] z-10"></div>
             {/* Abstract Background or Image */}
@@ -1425,6 +1438,8 @@ const App: React.FC = () => {
     const saved = localStorage.getItem('kaamkhoj_user');
     return saved ? JSON.parse(saved) : null;
   });
+  const location = useLocation();
+  const isHome = location.pathname === '/';
   
   const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'chat' | 'finance' | 'jobs' | 'profile' | 'portfolio' | 'settings' | 'projects'>('overview');
   
@@ -1444,7 +1459,7 @@ const App: React.FC = () => {
       <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300 font-sans">
         <Navigation user={user} onLogout={handleLogout} />
 
-        <main className="flex-grow pt-20">
+        <main className={`flex-grow ${isHome ? 'pt-0' : 'pt-20'}`}>
           <Routes>
             <Route path="/" element={<HomeView user={user} />} />
             <Route path="/auth" element={user ? <Navigate to="/dashboard" /> : <AuthPage onLogin={handleLogin} />} />
